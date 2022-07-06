@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer-extra');
 const stealthPlugin = require('puppeteer-extra-plugin-stealth');
+const ObjectsToCSV = require('objects-to-csv');
 
 const autoScroll = async (page) => {
   await page.evaluate(async () => {
@@ -30,7 +31,7 @@ const autoScroll = async (page) => {
 
     let grabbedInfo = []
     let pageNumber = 1
-    for(let pageNumber = 1;pageNumber <= 5;pageNumber++) {
+    for(let pageNumber = 1;pageNumber <= 10;pageNumber++) {
         await page.goto(`https://www.justdial.com/Bangalore/Gyms/nct-11575244/page-${pageNumber}`)
         await page.setViewport({
             width: 1200,
@@ -79,11 +80,14 @@ const autoScroll = async (page) => {
             })
             return nameList;
         }, map)
-        console.log(grabInfo.length)
         grabbedInfo = [...grabbedInfo,...grabInfo]
     }
-    console.log(grabbedInfo)
-    console.log(grabbedInfo.length)
+    const csv = new ObjectsToCSV(grabbedInfo);
+
+    await csv.toDisk('./info.csv', {
+        allColumns: true,
+        append: true,
+    });
     await browser.close()
 })();
 
@@ -93,4 +97,4 @@ const autoScroll = async (page) => {
 //          section jcar
 //              div  col-sm-5 col-xs-8 store-details sp-detail paddingR0
 //                  h2 store-name
-//              
+//                  all info here
